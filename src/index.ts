@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 8000;
 app.use(express.json());
 
 app.listen(PORT, () => {
-  sequelize.sync().then(() => {
+  sequelize.sync({force:true}).then(() => {
     console.log(`Server running at http://localhost:${PORT}`);
   });
 });
