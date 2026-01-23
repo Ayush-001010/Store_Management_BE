@@ -7,8 +7,22 @@ import Organization from "./ShopRelatedTables/OrganizationTable";
 import Store from "./ShopRelatedTables/StoreTable";
 import Selling from "./ShopRelatedTables/SellingTable";
 import Inventory from "./ShopRelatedTables/InventoryTable";
+import PurchasingTrackingTable from "./ShopRelatedTables/PurchasingTrackingTable";
 
-const model: Record<string, any> = {
+export interface ModelInterface {
+  UsersTable: typeof UsersTable;
+  City: typeof City;
+  State: typeof State;
+  Street: typeof Street;
+  ShopCategory: typeof ShopCategory;
+  Organization: typeof Organization;
+  Store: typeof Store;
+  Inventory: typeof Inventory;
+  Selling: typeof Selling;
+  PurchasingTrackingTable: typeof PurchasingTrackingTable;
+}
+
+const model:ModelInterface = {
   UsersTable,
   City,
   State,
@@ -17,7 +31,8 @@ const model: Record<string, any> = {
   Organization,
   Store,
   Inventory,
-  Selling
+  Selling,
+  PurchasingTrackingTable
 };
 
 State.hasMany(City);
@@ -40,5 +55,10 @@ Store.hasMany(Selling, { foreignKey: "storeId" });
 
 Selling.belongsTo(Inventory, { foreignKey: "inventoryId" });
 Inventory.hasMany(Selling, { foreignKey: "inventoryId" });
+
+PurchasingTrackingTable.belongsTo(Store, { foreignKey: "storeId" });
+Store.hasMany(PurchasingTrackingTable, { foreignKey: "storeId" });
+
+
 
 export default model;

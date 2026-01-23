@@ -2,6 +2,7 @@ import express from "express";
 import sequelize from "./model/dbconfig";
 import MasterRoutes  from "./Routes/MasterRoute";
 import UserRoutes from "./Routes/UserRoutes";
+import StoreManagementRoute from "./Routes/StoreManagementRoute";
 import cors from 'cors';
 
 const app = express();
@@ -12,6 +13,7 @@ app.use(cors({ origin : "*"}))
 
 app.use("/master", MasterRoutes);
 app.use("/user",UserRoutes);
+app.use("/storeManagement",StoreManagementRoute);
 
 app.listen(PORT, () => {
   sequelize.sync().then(() => {
