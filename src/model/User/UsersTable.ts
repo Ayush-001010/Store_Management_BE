@@ -37,8 +37,12 @@ const UsersTable = sequelize.define("UsersTable", {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,
   },
-  lastLogIn: {
+  lastLogInTime: {
     type: DataTypes.DATE,
+    defaultValue: null,
+  },
+  userAbout : {
+    type: DataTypes.TEXT,
     defaultValue: null,
   },
   userGender:{
