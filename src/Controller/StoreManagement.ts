@@ -21,19 +21,23 @@ export const getCardsValue = async (req: Request, res: Response) => {
           })
         ).map((store: any) => store.id);
 
-        const numberOfProfitMakingShops =
-          await model.PurchasingTrackingTable.count({
-            where: {
-              [Op.and]: [
-                {
-                  storeId: {
-                    [Op.between]: [...storeIDs], // Include only specified store IDs within the range
-                  },
-                },
-                Sequelize.literal(`revenue - loss > 0`), // Use Sequelize.literal directly
-              ],
+        const profitMakingShops = await model.PurchasingTrackingTable.findAll({
+          attributes: [
+            "storeId",
+            [Sequelize.fn("SUM", Sequelize.col("revenue")), "totalRevenue"],
+            [Sequelize.fn("SUM", Sequelize.col("loss")), "totalLoss"],
+          ],
+          where: {
+            storeId: {
+              [Op.between]: [...storeIDs],
             },
-          });
+          },
+          group: ["storeId"],
+          having: Sequelize.literal("SUM(revenue) - SUM(loss) > 0"),
+        });
+
+        const numberOfProfitMakingShops = profitMakingShops.length;
+
         return res.send({ success: true, data: numberOfProfitMakingShops });
       }
       case "totalrevenue": {
@@ -43,6 +47,9 @@ export const getCardsValue = async (req: Request, res: Response) => {
             attributes: ["id"],
           })
         ).map((store: any) => store.id);
+
+        const monthStr = CommonConfig.months[new Date().getMonth()];
+        const year = new Date().getFullYear();
 
         const totalRevenueResult = await model.PurchasingTrackingTable.findAll({
           where: {
@@ -416,3 +423,75 @@ export const getOptions = async (req: Request, res: Response) => {
     return res.send({ success: false, data: "Something went wrong" });
   }
 };
+
+export const getStoreData = async (req: Request, res: Response) => {
+  try {
+    const { type , organizationId } = req.body;
+    console.log("getStoreData called with type:", type, "organizationId:", organizationId);
+    switch (type) {
+      case "All_Store":{
+        const storeData = await model.Store.findAll({
+          where: { organizationId  , isActive: true },
+        });
+        return res.send({ success: true, data: storeData });
+      }
+      case "Favorite_Store":{
+        const favoriteStores = await model.Store.findAll({
+          where: { organizationId , isFavorite: true , isActive: true },
+        });
+        return res.send({ success: true, data: favoriteStores });
+      }
+      case "Profit" :{
+        const profitableStores = await model.Store.findAll({
+          where: {
+            organizationId,
+            isActive: true,
+            profit: {
+              [Op.gte]: Sequelize.col('loss'),
+            }
+          },
+        });
+        return res.send({ success: true, data: profitableStores });
+      }
+      case "Loss" :{
+        const lossMakingStores = await model.Store.findAll({
+          where: {
+            organizationId,
+            isActive: true,
+            loss: {
+              [Op.gte]: Sequelize.col('profit'),
+            }
+          },
+        });
+        return res.send({ success: true, data: lossMakingStores });
+      }
+      case "Most_Sold_Items" :{
+        const storesBySoldItems = await model.Store.findAll({
+          where: { organizationId , isActive: true },
+          order: [['soldItemsCount', 'DESC']],
+        });
+        return res.send({ success: true, data: storesBySoldItems });
+      }
+    }
+    return res.send({ success: false, data: "Invalid type" });
+  } catch (error) {
+    console.error("Error in getStoreData:", error);
+    return res.send({ success: false, data: "Something went wrong" });
+  }
+};
+
+export const setIsFavorite = async (req: Request, res: Response) => {
+  try {
+    const { id, isFavorite } = req.body;
+    
+    await model.Store.update(
+      { isFavorite },
+      { where: { id } }
+    );
+
+    return res.send({ success: true, data: "Favorite status updated successfully" });
+  } catch (error) {
+    console.error("Error in setIsFavorite:", error);
+    return res.send({ success: false, data: "Something went wrong" });
+  }
+}
