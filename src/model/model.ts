@@ -8,6 +8,7 @@ import Store from "./ShopRelatedTables/StoreTable";
 import Selling from "./ShopRelatedTables/SellingTable";
 import Inventory from "./ShopRelatedTables/InventoryTable";
 import PurchasingTrackingTable from "./ShopRelatedTables/PurchasingTrackingTable";
+import PurchasingTrackingDayWiseTable from "./ShopRelatedTables/PurchasingTrackingDayWiseTable";
 
 export interface ModelInterface {
   UsersTable: typeof UsersTable;
@@ -20,9 +21,10 @@ export interface ModelInterface {
   Inventory: typeof Inventory;
   Selling: typeof Selling;
   PurchasingTrackingTable: typeof PurchasingTrackingTable;
+  PurchasingTrackingDayWiseTable: typeof PurchasingTrackingDayWiseTable;
 }
 
-const model:ModelInterface = {
+const model: ModelInterface = {
   UsersTable,
   City,
   State,
@@ -32,7 +34,8 @@ const model:ModelInterface = {
   Store,
   Inventory,
   Selling,
-  PurchasingTrackingTable
+  PurchasingTrackingTable,
+  PurchasingTrackingDayWiseTable,
 };
 
 State.hasMany(City);
@@ -59,6 +62,7 @@ Inventory.hasMany(Selling, { foreignKey: "inventoryId" });
 PurchasingTrackingTable.belongsTo(Store, { foreignKey: "storeId" });
 Store.hasMany(PurchasingTrackingTable, { foreignKey: "storeId" });
 
-
+PurchasingTrackingDayWiseTable.belongsTo(Store, { foreignKey: "storeId" });
+Store.hasMany(PurchasingTrackingDayWiseTable, { foreignKey: "storeId" });
 
 export default model;

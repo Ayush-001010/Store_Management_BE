@@ -56,6 +56,30 @@ const Store = sequelize.define("StoreTable", {
     allowNull: true, // Optional based on requirement
     comment: "The date when the shop started selling products",
   },
+  isActive:{
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
+  },
+  isFavorite: {
+    type:DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  revenu:{
+    type:DataTypes.FLOAT,
+    defaultValue:0,
+  },
+  loss:{
+    type:DataTypes.FLOAT,
+    defaultValue:0,
+  },
+  profit:{
+    type:DataTypes.FLOAT,
+    defaultValue:0,
+  },
+  soldItemsCount:{
+    type:DataTypes.INTEGER,
+    defaultValue:0,
+  },
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,
