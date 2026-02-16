@@ -132,3 +132,79 @@ export const getChatMessages = async (req: Request, res: Response) => {
         return res.send({success : false, data: "Something went wrong"});
     }
 };
+
+export const getCountOfFileType = async (req: Request, res: Response) => {
+    try {
+        const {type , chatRoomID} = req.body;
+        switch(type){
+            case "Image" : {
+                const response = await model.MessageTable.count({
+                    where : {
+                        messageType : "file",
+                        fileType : "Image",
+                        chatRoomID
+                    },
+                });
+                return res.send({success : true, data: response});
+            }
+            case "Other" : {
+                const response = await model.MessageTable.count({
+                    where : {
+                        messageType : "file",
+                        fileType : "Other",
+                        chatRoomID
+                    },
+                });
+                return res.send({success : true, data: response});
+            }
+        }
+    } catch (error) {
+        console.log("Error ", error);
+        return res.send({success : false, data: "Something went wrong"});
+    }
+};
+
+export const getFilesAndImages = async (req: Request, res: Response) => {
+    try {
+        const {chatRoomID , type } = req.body;
+        switch(type){
+            case "Image" : {
+                const response = await model.MessageTable.findAll({
+                    where : {
+                        messageType : "file",
+                        fileType : "Image",
+                        chatRoomID
+                    },
+                });
+                return res.send({success : true, data: response.map((item: any) => {
+                    return {
+                        ID : item.ID,
+                        fileURL : item.fileURL,
+                        senderName : item.senderName,
+                        createdAt : item.createdAt,
+                    };
+                })});
+            }
+            case "Other" : {
+                const response = await model.MessageTable.findAll({
+                    where : {
+                        messageType : "file",
+                        fileType : "Other",
+                        chatRoomID
+                    },
+                });
+                return res.send({success : true, data: response.map((item: any) => {
+                    return {
+                        ID : item.ID,
+                        fileURL : item.fileURL,
+                        senderName : item.senderName,
+                        createdAt : item.createdAt,
+                    };
+                })});
+            }
+        }
+    } catch (error) {
+        console.log("Error ", error);
+        return res.send({success : false, data: "Something went wrong"});
+    }
+};

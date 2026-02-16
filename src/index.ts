@@ -72,6 +72,42 @@ io.on("connection", (socket) => {
 
   });
 
+  socket.on("typing-start" , async (data) => {
+    const { chatRoomID , userName } = data;
+    const userDetails = await model.ChatParticipantsTable.findAll({ where: { chatRoomID } });
+    
+    userDetails.forEach(async (user) => {
+      const { userID } = user.dataValues;
+      const userInfo = await model.UsersTable.findOne({ where: { ID: userID } });
+      if(userInfo){
+        const { ID , userEmail } = userInfo.dataValues;
+        const keyStr = `${ID}-${userEmail}`;
+        const socketId = await Client.get(keyStr);
+        if(socketId) {
+          console.log("Emitting typing-start to socket ID:", socketId , "for user ID:", userEmail);
+          io.to(socketId).emit("user-typing", { chatRoomID, userName });
+        }
+    }});
+  });
+
+  socket.on("typing-stop" , async (data) => {
+    const { chatRoomID , userName } = data;
+    const userDetails = await model.ChatParticipantsTable.findAll({ where: { chatRoomID } });
+    
+    userDetails.forEach(async (user) => {
+      const { userID } = user.dataValues;
+      const userInfo = await model.UsersTable.findOne({ where: { ID: userID } });
+      if(userInfo){
+        const { ID , userEmail } = userInfo.dataValues;
+        const keyStr = `${ID}-${userEmail}`;
+        const socketId = await Client.get(keyStr);
+        if(socketId) {
+          console.log("Emitting typing-stop to socket ID:", socketId , "for user ID:", userEmail);
+          io.to(socketId).emit("user-stopped-typing", { chatRoomID, userName });
+        }
+    }});
+  });
+
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
   });
