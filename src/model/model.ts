@@ -12,6 +12,7 @@ import PurchasingTrackingDayWiseTable from "./ShopRelatedTables/PurchasingTracki
 import ChatRoomTable from "./Chat/ChatRoomTable";
 import ChatParticipantsTable from "./Chat/ChatParticipantsTable";
 import MessageTable from "./Chat/MessageTable";
+import CreateLayoutChat from "./ECOM/CreateLayoutChat";
 
 export interface ModelInterface {
   UsersTable: typeof UsersTable;
@@ -28,6 +29,7 @@ export interface ModelInterface {
   ChatRoomTable: typeof ChatRoomTable;
   ChatParticipantsTable: typeof ChatParticipantsTable;
   MessageTable: typeof MessageTable;
+  CreateLayoutChat : typeof CreateLayoutChat;
 }
 
 const model: ModelInterface = {
@@ -44,7 +46,8 @@ const model: ModelInterface = {
   PurchasingTrackingDayWiseTable,
   ChatRoomTable,
   ChatParticipantsTable,
-  MessageTable
+  MessageTable,
+  CreateLayoutChat
 };
 
 // Existing associations

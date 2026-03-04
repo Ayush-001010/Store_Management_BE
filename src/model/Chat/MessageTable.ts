@@ -30,7 +30,7 @@ const MessageTable = sequelize.define("MessageTable", {
     isDeleted : {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
-    },
+    }, 
     fileType:{
         type: DataTypes.ENUM("Image" , "Other"),
         allowNull: true,
